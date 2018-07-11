@@ -3,6 +3,21 @@ $(document).ready(function () {
 
     // ============================================================================ GIF SECTION =====================================================================================
 
+    // configure firebase
+    var config = {
+        apiKey: "AIzaSyDpa1D5fuqUy0FtgpKNdJEfTEwqlQoutYg",
+        authDomain: "group-project-1-dbc.firebaseapp.com",
+        databaseURL: "https://group-project-1-dbc.firebaseio.com/",
+        projectId: "group-project-1-dbc",
+        storageBucket: "group-project-1-dbc.appspot.com",
+        messagingSenderId: "110968687261"
+    };
+
+    firebase.initializeApp(config);
+
+
+    var database = firebase.database();
+
     // Creating event listener for gif search box
     $("#gif-search").on("click", gifSearch);
     // Creating event listener for gif submit button "Pick Me"
@@ -33,7 +48,7 @@ $(document).ready(function () {
                 // Creating a variable to access the gifs URL
                 var gifURL = response.data[i].images.fixed_width_small.url;
                 // Creating a variable that creates an HTML button element to submit the desired gif
-                var submitGif = $("<button>").addClass("btn btn-primary player-pick");
+                var submitGif = $("<button>").addClass("btn btn-dark player-pick");
                 submitGif.attr("gifURL", gifURL);
                 submitGif.text("Pick Me");
                 // Creating a variable that creates an HTML image element with the source of the gif
@@ -53,13 +68,13 @@ $(document).ready(function () {
         var submittedGifHolder = $("<img>").attr("src", $(this).attr("gifURL"));
         submittedGifHolder.addClass("submitted");
         // Create a vote button to append to the gif
-        var voteBtn = $("<button>").addClass("btn btn-primary vote-button");
+        var voteBtn = $("<button>").addClass("btn btn-dark vote-button");
         voteBtn.text("Vote For Me");
         // Append button to submitted gif holder
         submittedGifHolder.append(voteBtn);
         // Display the chosen gif into the community gif dump
         $("#community-gif-dump").append(submittedGifHolder, voteBtn);
-        
+
     };
 
 
