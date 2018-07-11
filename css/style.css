@@ -3,7 +3,7 @@ body{
 }
 
 .jumbotron {
-    background-color: black;
+    background-color:#262626;
     color: white;
     border: 1px solid white;
     border-top: none;
@@ -26,4 +26,61 @@ body{
 
 #player-gif-dump {
     border-top: 1px solid white;
+}
+
+#imgg{
+    position: absolute; 
+    width:40px; 
+    height:80px; 
+    top:230px; 
+    /* right:910px; */
+}
+@media only screen and (min-width: 320px) {
+    #imgg{
+        width:20px;
+        height:40px;
+        position:absolute;
+        top:325px;
+        left:40px;
+    }
+
+}
+@media only screen and (min-width: 360px){
+         #imgg{
+        width:25px;
+        height:50px;
+        position:absolute;
+        top:255px;
+        left:30px;
+         }
+}
+
+@media only screen and (min-width: 768px){
+    #imgg{
+        width:40px;
+        height:80px;
+        position: absolute;
+        top:190px;
+        left:90px;
+    }
+
+    @media only screen and (min-width: 1000px){
+        #imgg{
+            width:40px;
+            height:80px;
+            position: absolute;
+            top:190px;
+            left:220px;
+        }
+
+}
+
+@media only screen and (min-width: 1100px){
+    #imgg{
+        width:40px;
+        height:80px;
+        position: absolute;
+        top:190px;
+        left:260px;
+    }
 }
