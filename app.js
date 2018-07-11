@@ -32,8 +32,8 @@ $(document).ready(function () {
         if (playerName.length > 0) {
 
             // Replaces name form with actual name
-            $("#player-name").html(playerName);
-
+            $("#player-name").prepend(playerName);
+            $("#player-name-form").hide();
             pushPlayer();
 
         }
