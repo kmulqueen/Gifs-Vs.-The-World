@@ -82,7 +82,7 @@ $(document).ready(function () {
 
     // ======================================================================== CARD SECTION ===================================================================================
     $(document).on("click", "#newRoundButton", function () {
-
+        $("#blackCardText").empty()
         var queryURL = "https://api.myjson.com/bins/19wq0e";
         var blackCard = 0;
 
