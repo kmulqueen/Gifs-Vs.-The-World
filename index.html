@@ -8,9 +8,10 @@
     <title>GIFs Against Humanity</title>
     <!-- CSS & BOOTSTRAP -->
     <link rel="stylesheet" href="./css/reset.css">
-    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
-        crossorigin="anonymous">
+    crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+  
     <!-- jQuery & app.js -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
@@ -27,7 +28,7 @@
             <div id="community-gif-dump" class="text-center">This is where the submitted gifs will show to be voted on.</div>
         </div>
         <!-- Player's Interface -->
-        <div class="card">
+        <div id="player-card" class="card">
                 <div class="card-header">
                   Player Name
                 </div>
@@ -36,7 +37,7 @@
                   <h5 class="card-title">Search For Gifs</h5>
                   <form id="gif-form">
                         <input type="text" id="gif-input">
-                        <input type='submit' id="gif-search"  class="btn btn-primary"value="Add a gif">
+                        <input type='submit' id="gif-search"  class="btn btn-dark"value="Add a gif">
                     </form>
                     <br>
                     <hr>

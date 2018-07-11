@@ -1,0 +1,29 @@
+body{
+    background-color: black;
+}
+
+.jumbotron {
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    border-top: none;
+}
+
+#community-gif-dump {
+    padding: 15px 0 0 0;
+    border-top: 1px solid white;
+}
+
+#player-card {
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+}
+
+.card-header {
+    border-bottom: 1px solid white;
+}
+
+#player-gif-dump {
+    border-top: 1px solid white;
+}
