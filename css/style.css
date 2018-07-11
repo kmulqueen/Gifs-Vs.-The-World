@@ -40,6 +40,9 @@ body{
     top:230px; 
     /* right:910px; */
 }
+#timer{
+    float: right;
+}
 @media only screen and (min-width: 320px) {
     #imgg{
         width:20px;
@@ -85,7 +88,7 @@ body{
         width:40px;
         height:80px;
         position: absolute;
-        top:190px;
-        left:260px;
+        top:30px;
+        left:130px;
     }
 }
