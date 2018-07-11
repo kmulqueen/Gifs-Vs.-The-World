@@ -21,29 +21,34 @@
     <div class="container">
         <!-- Black Card & Submitted gifs -->
         <div class="jumbotron">
-            <h1 class="display-4 text-center">Black Card will go here?
+            <h1 id="community-gif-dump" class="display-4 text-center">submited Gif's will go here?
             </h1>
             <hr class="my-4">
-            <div id="community-gif-dump" class="text-center">This is where the submitted gifs will show to be voted on.</div>
+            <div id="blackCardText" class="text-center"></div>
         </div>
         <!-- Player's Interface -->
         <div class="card">
-                <div class="card-header">
-                  Player Name
-                </div>
-                <!-- Searching for gifs -->
-                <div class="card-body">
-                  <h5 class="card-title">Search For Gifs</h5>
-                  <form id="gif-form">
-                        <input type="text" id="gif-input">
-                        <input type='submit' id="gif-search"  class="btn btn-primary"value="Add a gif">
-                    </form>
-                    <br>
-                    <hr>
-                    <!-- Player's gifs show here -->
-                    <div id="player-gif-dump">Search Results Show Here</div>
-                </div>
-              </div>
+            <div class="card-header">
+                Player Name
+            </div>
+            <!-- Searching for gifs -->
+            <div class="card-body">
+                <h5 class="card-title">Search For Gifs</h5>
+                <form id="gif-form">
+                    <input type="text" id="gif-input">
+                    <input type='submit' id="gif-search" class="btn btn-primary" value="Add a gif">
+                </form>
+                <br>
+                <hr>
+                <!-- Player's gifs show here -->
+                <div id="player-gif-dump">Search Results Show Here</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- new round button -->
+    <div>
+        <button id="newRoundButton">New Round</button>
     </div>
 </body>
 
