@@ -20,6 +20,11 @@ body{
     border: 1px solid white;
 }
 
+#player-name-form {
+    width: 50%;
+    padding-top: 10px;
+}
+
 .card-header {
     border-bottom: 1px solid white;
 }
