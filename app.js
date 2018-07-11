@@ -43,7 +43,6 @@ $(document).ready(function () {
     function pushPlayer(playerName) {
         
     };
-
     // Creating event listener for gif search box
     $("#gif-search").on("click", gifSearch);
     // Creating event listener for gif submit button "Pick Me"
@@ -107,7 +106,24 @@ $(document).ready(function () {
 
 
     // ======================================================================== CARD SECTION ===================================================================================
+    $(document).on("click", "#newRoundButton", function () {
+        $("#blackCardText").empty()
+        var queryURL = "https://api.myjson.com/bins/19wq0e";
+        var blackCard = 0;
 
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function (response) {
+            var blackCardsLen = response.blackCards.length
+            var randomIdx = Math.floor(Math.random() * (blackCardsLen + 1))
+            var text = response.blackCards[randomIdx].text
+            console.log(blackCardsLen)
+            console.log(response.blackCards[randomIdx]);
+            $("#blackCardText").append(text);
+
+        })
+    })
 
     // ======================================================================== UNDECLARED SECTION =============================================================================
 
