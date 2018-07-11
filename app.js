@@ -18,6 +18,31 @@ $(document).ready(function () {
 
     var database = firebase.database();
 
+    // Attaches submit player function to ready button
+    $("#ready-button").on("click", submitPlayer)
+
+    // Submit Player function
+    function submitPlayer(p) {
+
+        p.preventDefault();
+
+        // Declare variable for Player Name
+        var playerName = $("#player-name-input").val().trim();
+
+        if (playerName.length > 0) {
+
+            // Replaces name form with actual name
+            $("#player-name").html(playerName);
+
+            pushPlayer();
+
+        }
+    }
+
+
+    function pushPlayer(playerName) {
+        
+    };
     // Creating event listener for gif search box
     $("#gif-search").on("click", gifSearch);
     // Creating event listener for gif submit button "Pick Me"

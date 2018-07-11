@@ -16,9 +16,9 @@
     <link rel="stylesheet" href="./css/style.css">
 
     <!-- jQuery, firebase, & app.js -->
+    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
     <script src="app.js"></script>
 </head>
 
@@ -39,9 +39,15 @@
       
         <!-- Player's Interface -->
         <div id="player-card" class="card">
-            <div class="card-header">
-                Player Name
-            </div>
+            <div class="card-header" id="player-name">
+                <!-- Form to Input & Collect Player Name -->
+                <div class="input-group mb-3" id="player-name-form">
+                    <input type="text" class="form-control" id="player-name-input" placeholder="Player Name" required>
+                    <div class="input-group-append">
+                        <input type='submit' class="btn btn-dark" id="ready-button" type="button" value="Ready!">
+                    </div>
+                </div>
+
             <!-- Searching for gifs -->
             <div class="card-body">
                 <h5 class="card-title">Search For Gifs</h5>
@@ -57,6 +63,7 @@
                 <div id="player-gif-dump">Search Results Show Here</div>
             </div>
         </div>
+
     </div>
 
     <!-- new round button  -->
