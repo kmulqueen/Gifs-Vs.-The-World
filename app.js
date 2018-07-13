@@ -21,21 +21,24 @@ $(document).ready(function () {
     var database = firebase.database();
 
     // Player variables
-    var playerName = '';
+    var playerName;
     var wins = 0;
     var voteCount = 0;
     var voteSumbitted = 'a';
+    //Reference to player in database
+    var playerRef;
 
-    // Attaches submit player function to ready button
-    $("#ready-button").on("click", submitPlayer)
-
-    // Submit Player function
-    function submitPlayer(p) {
+    $("#ready-button").click(function (p) {
 
         p.preventDefault();
 
         // Declare variable for Player Name
-        var playerName = $("#player-name-input").val().trim();
+        var newPlayerName = $("#player-name-input").val().trim();
+        playerName = newPlayerName;
+        playerRef = database.ref("players/" + playerName);
+
+        // Removes player when they disconnect
+        playerRef.onDisconnect().remove();
 
 
         if (playerName.length > 0) {
@@ -56,17 +59,7 @@ $(document).ready(function () {
                 voteSumbitted: voteSumbitted,
             });
         };
-
-        console.log(playerRef)
-        //  added number of players if it isn't 3 or more game wont start
-        numPlayers++;
-    }
-
-    //Reference to player in database
-    var playerRef = database.ref("players/" + playerName);
-
-    // Removes player when they disconnect
-    playerRef.onDisconnect().remove();
+    });
 
     // Creating event listener for gif search box
     $("#gif-search").on("click", gifSearch);
@@ -255,21 +248,15 @@ $(document).ready(function () {
         timeStart;
     }
 
+    database.ref().on("value", function (snapshot) {
 
+        console.log(playerName)
 
+        console.log(snapshot.val());
 
-
-
-
-
-
-
-
-
-
-
-
-
+    }, function (errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+    });
 
 
 });
