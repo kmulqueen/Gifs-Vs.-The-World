@@ -102,7 +102,7 @@ $(document).ready(function () {
             }
         });
     };
-    var votes = 0;
+    var votes = 1;
     // gifSubmit function
     function gifSubmit() {
         // Empty the players gif dump
@@ -111,15 +111,20 @@ $(document).ready(function () {
         var submittedGifHolder = $("<img>").attr("src", $(this).attr("gifURL"));
         submittedGifHolder.addClass("submitted");
         // Create a vote button to append to the gif
-        var voteBtn = $("<button>").addClass("btn btn-dark vote-button");
+        var voteBtn = $("<button>").addClass("btn btn-dark vote-button customButton");
         voteBtn.text("Vote For Me");
         // Append button to submitted gif holder
         submittedGifHolder.append(voteBtn);
         // Display the chosen gif into the community gif dump
+        var gifDiv = $("<div>").append(submittedGifHolder, voteBtn);
+        gifDiv.addClass("customGif");
+        $("#community-gif-dump").append(gifDiv);
         $("#community-gif-dump").append(submittedGifHolder, voteBtn);
         voteBtn.on("click", function () {
             console.log("votes" + votes);
             votes++;
+            voteBtn.hide();
+            
         })
 
 
@@ -156,7 +161,7 @@ $(document).ready(function () {
         counter = 30;
 
         function countDown() {
-            console.log(counter);
+            // console.log(counter);
             counter--;
             $("#timer").html(counter);
             if (counter == 0) {
@@ -170,7 +175,8 @@ $(document).ready(function () {
             clearInterval(timeStart);
         }
 
-        $("#blackCardText").empty()
+        $("#blackCardText").empty();
+        $("#community-gif-dump").empty();
         var queryURL = "https://api.myjson.com/bins/19wq0e";
         var blackCard = 0;
 
@@ -182,9 +188,9 @@ $(document).ready(function () {
             var randomIdx = Math.floor(Math.random() * (blackCardsLen + 1))
             var text = response.blackCards[randomIdx].text
             var pick = response.blackCards[randomIdx].pick;
-            console.log("picked " + pick);
-            console.log(blackCardsLen)
-            console.log(response.blackCards[randomIdx]);
+            // console.log("picked " + pick);
+            // console.log(blackCardsLen)
+            // console.log(response.blackCards[randomIdx]);
             // !!!!!!!! I tried to make it that it would only choose cards that had a pick one, didnt work, we may have to find a way to append two gifs to one vote button
             if (pick > 1) {
                 blackCardsLen++;
@@ -216,7 +222,7 @@ $(document).ready(function () {
         counter = 15;
 
         function countDown() {
-            console.log(counter);
+            // console.log(counter);
             counter--;
             $("#timer").html(counter);
             if (counter == 0) {
@@ -225,10 +231,10 @@ $(document).ready(function () {
                 });
                 clearInterval(timeStart);
                 $("#blackCardText").html(playerName + " won!");
-                // !!! tried to clear the imput but didnt work :/
-                $("#gif-imput").val("");
+                // !!! tried to clear the input but didnt work :/
+                $("#gif-input").val("");
                 $("#community-gif-dump").empty();
-                votes = 0;
+                votes = 1;
                 startGame();
                 // !!!!!!!  voting countdown,we need to change the if statement, im just seeing that it works
                 // also we need to change votes=1 cause the first press is 0
@@ -241,7 +247,7 @@ $(document).ready(function () {
 
                 $("#blackCardText").html(playerName + " won!");
                 // this doesnt work either, may need some firebase^^ 
-                votes = 0;
+                votes = 1;
 
             }
         }
