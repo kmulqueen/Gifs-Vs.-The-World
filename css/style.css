@@ -33,6 +33,15 @@ body{
     border-top: 1px solid white;
 }
 
+.customButton {
+    display: block;
+    margin: auto;
+}
+
+.customGif {
+    display: inline-block;
+}
+
 #imgg{
     position: absolute; 
     width:40px; 
@@ -71,6 +80,7 @@ body{
         top:190px;
         left:90px;
     }
+}
 
     @media only screen and (min-width: 1000px){
         #imgg{
