@@ -114,9 +114,6 @@ $(document).ready(function () {
         $("#player-gif-dump").empty();
         // Create a variable that creates an HTML image element with the source of the gif
         var submittedGifHolder = $("<img>").attr("src", $(this).attr("gifURL"));
-        database.ref().child("players/" + playerName).update({
-            gifLink: $(this).attr("gifURL")
-        })
         submittedGifHolder.addClass("submitted");
         // Create a vote button to append to the gif
         var voteBtn = $("<button>").addClass("btn btn-dark vote-button customButton");
@@ -128,8 +125,31 @@ $(document).ready(function () {
         gifDiv.addClass("customGif");
         $("#community-gif-dump").append(gifDiv);
         $("#community-gif-dump").append(submittedGifHolder, voteBtn);
+        // Update gifLink
+        database.ref().child("players/" + playerName).update({
+            gifLink: $(this).attr("gifURL")
+        });
+        // Make firebase reference
+        database.ref("gifs/").push({
+            gifpick: $(this).attr("gifURL")
+        })
+        // update page
+        database.ref("gifs/").on('child_added', function(childsnapshot) {
+            console.log("Gifs childsnapshot : " + childsnapshot.val().gifpick);
+            var newHolder = $("<img>").attr("src", childsnapshot.val().gifpick);
+            $("#community-gif-dump").append(newHolder);
+        })
+        // Update gifs on page hopefully
+        database.ref("players/").child('gifLink').on("value", function(snapshot) {
+            console.log("gifLink snapshot : " + snapshot.val());
+            $("community-gif-dump").append(snapshot.val());
+        })
+        
         voteBtn.on("click", function () {
             console.log("votes" + votes);
+            database.ref().child("players/" + playerName).update({
+                voteCount: votes
+            })
             votes++;
             voteBtn.hide();
         })
