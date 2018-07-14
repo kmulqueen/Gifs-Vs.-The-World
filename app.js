@@ -257,6 +257,10 @@ $(document).ready(function () {
     database.ref().on("value", function (snapshot) {
 
         console.log(playerName)
+        var playerNamesObject = snapshot.val().players
+        var playernames = Object.keys(playerNames)
+        console.log(playerNamesObject)
+        console.log(playernames)
 
         console.log(snapshot.val());
 
