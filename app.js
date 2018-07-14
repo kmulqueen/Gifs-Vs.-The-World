@@ -21,9 +21,11 @@ $(document).ready(function () {
 
     // Player variables
     var playerName;
-    var numPlayers = 0;
     var wins = 0;
     var voteCount = 0;
+    var timeId;
+    var timerRunning = false;
+    var counter = 30
     var voteSumbitted = 'a';
     var gifLink = '';
     //Reference to player in database
@@ -154,29 +156,9 @@ $(document).ready(function () {
 
     // ==================================================START GAME SECTION =============================================================================
 
-
-
     function startGame() {
 
-        var timeStart = setInterval(function () {
-            countDown(), counter
-        }, 1000);
-        counter = 30;
-
-        function countDown() {
-            // console.log(counter);
-            counter--;
-            $("#timer").html(counter);
-            if (counter == 0) {
-                $("#timer").html("Time to vote!")
-                clearInterval(timeStart);
-                voteTime();
-            }
-        }
-
-        function stopTime() {
-            clearInterval(timeStart);
-        }
+        countDown();
 
         $("#blackCardText").empty();
         $("#community-gif-dump").empty();
@@ -198,7 +180,7 @@ $(document).ready(function () {
             if (pick > 1) {
                 blackCardsLen++;
             }
-            $("#blackCardText").append(text);
+
 
             // Function that sets and rewrites question when new question is generated
             function setquestion() {
@@ -207,61 +189,61 @@ $(document).ready(function () {
                 })
             };
 
+
             // Pushes question to database when button is clicked
             setquestion();
+            callQuestion();
+
+            // var questionText = database.ref('question/' + cardquestion)
+            // console.log(questionText)
+
+            // $("#blackCardText").append(questionText);
+
 
 
         })
 
     }
 
-    function voteTime() {
-        blackCardImg.animate({
-            height: "1px"
-        });
-        var timeStart = setInterval(function () {
-            countDown(), counter
-        }, 1000);
-        counter = 15;
+    function pickCard(){
+        
+    }
 
-        function countDown() {
-            // console.log(counter);
-            counter--;
-            $("#timer").html(counter);
-            if (counter == 0) {
-                blackCardImg.animate({
-                    height: "80px"
-                });
-                clearInterval(timeStart);
-                $("#blackCardText").html(playerName + " won!");
-                // !!! tried to clear the input but didnt work :/
-                $("#gif-input").val("");
-                $("#community-gif-dump").empty();
-                votes = 1;
-                startGame();
-                // !!!!!!!  voting countdown,we need to change the if statement, im just seeing that it works
-                // also we need to change votes=1 cause the first press is 0
-            } else if (votes > 2) {
+    function callQuestion() {
+        database.ref('question/').child("cardquestion").on('value', function (snapshot) {
+            console.log("Question Snapshot: " + snapshot.val());
+            $("#blackCardText").html(snapshot.val());
+        })
+    }
 
-                // $(this).playerWins++;
-                blackCardImg.animate({
-                    height: ".001px"
-                });
-
-                $("#blackCardText").html(playerName + " won!");
-                // this doesnt work either, may need some firebase^^ 
-                votes = 1;
-
-            }
+    function countDown() {
+        // console.log(counter);
+        counter--;
+        $("#timer").html(counter);
+        if (!timerRunning) {
+            timeId = setInterval(countDown, 1000);
+            timerRunning = true;
+        };
+        if (counter == 0) {
+            $("#timer").html("Time to vote!")
+            $("#blackCardText").html("Winner won!");
+            clearInterval(timeId);
+            timerRunning = false;
+            blackCardImg.animate({
+                height: "80px"
+            });
+            setTimeout(progressGame, 4500)
         }
-        timeStart;
     }
 
-    if (numPlayers == 0) {
-        database.ref('StartGame/').update({
-            Status: "No",
-        })
-    }
+    function progressGame() {
+        $("#community-gif-dump").empty();
+        $("#gif-input").val("");
+        votes = 1;
+        counter = 30;
+        callQuestion();
+        countDown();
+    };
 
     database.ref("players/").on("value", function (snapshot) {
 
@@ -291,7 +273,13 @@ $(document).ready(function () {
         }
         console.log(readyValueArray)
         console.log(sum)
-        if (sum == numPlayers) {
+        console.log(numPlayers)
+        if (numPlayers == 1) {
+            database.ref('StartGame/').update({
+                Status: "No",
+            })
+        }
+        if (numPlayers >= 3 && sum == numPlayers) {
             database.ref('StartGame/').update({
                 Status: "Yes",
             })
