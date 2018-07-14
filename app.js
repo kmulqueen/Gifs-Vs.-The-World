@@ -21,9 +21,11 @@ $(document).ready(function () {
 
     // Player variables
     var playerName;
+    var numPlayers = 0;
     var wins = 0;
     var voteCount = 0;
     var voteSumbitted = 'a';
+    var gifLink = '';
     //Reference to player in database
     var playerRef;
 
@@ -56,6 +58,8 @@ $(document).ready(function () {
                 wins: wins,
                 voteCount: voteCount,
                 voteSumbitted: voteSumbitted,
+                status: 'Not Ready',
+                gifLink: gifLink
             });
         };
     });
@@ -108,6 +112,9 @@ $(document).ready(function () {
         $("#player-gif-dump").empty();
         // Create a variable that creates an HTML image element with the source of the gif
         var submittedGifHolder = $("<img>").attr("src", $(this).attr("gifURL"));
+        database.ref().child("players/" + playerName).update({
+            gifLink: $(this).attr("gifURL")
+        })
         submittedGifHolder.addClass("submitted");
         // Create a vote button to append to the gif
         var voteBtn = $("<button>").addClass("btn btn-dark vote-button customButton");
@@ -123,7 +130,6 @@ $(document).ready(function () {
             console.log("votes" + votes);
             votes++;
             voteBtn.hide();
-            
         })
 
 
@@ -135,14 +141,12 @@ $(document).ready(function () {
 
     // ======================================================================== CARD SECTION ===================================================================================
     $(document).on("click", "#newRoundButton", function () {
-        // !!!!!!!!!!!!!!!-----!!!this is making sure 3 people are playing, for coding purposes im making it zero but before we final this we need to change it to 3!
 
-        if (numPlayers = 0) {
-            $("#blackCardText").html("You need 3 people or more to play this game!")
-        } else {
-            startGame();
+        database.ref().child("players/" + playerName).update({
+            status: 'Ready'
+        })
 
-        }
+        $("#newRoundButton").hide();
 
 
 
@@ -253,21 +257,60 @@ $(document).ready(function () {
         timeStart;
     }
 
-    database.ref().on("value", function (snapshot) {
+    if (numPlayers == 0) {
+        database.ref('StartGame/').update({
+            Status: "No",
+        })
+    }
+
+    database.ref("players/").on("value", function (snapshot) {
 
         console.log(playerName);
-        var playerNamesObject = snapshot.val().players;
+        var playerNamesObject = snapshot.val();
         var playernames = Object.keys(playerNamesObject);
-        var numPlayers = playernames.length;
+        numPlayers = playernames.length;
         console.log(playerNamesObject);
         console.log(playernames);
         console.log(numPlayers);
+        var sum = 0;
+        var readyValueArray = []
+        for (i = 0; i < numPlayers; i++) {
+            console.log(playerNamesObject[playernames[i]].status)
+            var playerStatus = playerNamesObject[playernames[i]].status
+            var readyValue;
 
-        console.log(snapshot.val());
+            if (playerStatus == "Ready") {
+                readyValue = 1
+                readyValueArray.push(readyValue)
+            } else {
+                readyValue = 0
+                readyValueArray.push(readyValue)
+            }
+
+            sum += readyValueArray[i]
+        }
+        console.log(readyValueArray)
+        console.log(sum)
+        if (sum == numPlayers) {
+            database.ref('StartGame/').update({
+                Status: "Yes",
+            })
+        }
 
     }, function (errorObject) {
         console.log("Errors handled: " + errorObject.code);
     });
+
+    database.ref("StartGame/").on("value", function (snapshot) {
+        var startGameStat = snapshot.val().Status;
+        console.log(startGameStat)
+        if (startGameStat == "Yes") {
+            startGame();
+        }
+    }, function (errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+    });
+
 
 
 });
