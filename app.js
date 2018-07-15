@@ -47,8 +47,12 @@ $(document).ready(function () {
         if (playerName.length > 0) {
 
             // Replaces name form with actual name
-            $("#player-name").prepend(playerName);
-            $("#player-name-form").hide();
+
+            // $("#player-name").prepend(playerName;
+            $("#player-name-form").html($("<p>").append(playerName).attr("id", "player-name-para"));
+            $("#player-name-form").append($("<button>").attr("type", "button").attr("class", "btn btn-dark").attr("id", "newRoundButton").attr("value", "New Round"));
+            $("#newRoundButton").append("New Round");
+
             // Writes data to database when button is clicked
             writePlayerData(playerName);
         }
@@ -112,38 +116,26 @@ $(document).ready(function () {
     function gifSubmit() {
         // Empty the players gif dump
         $("#player-gif-dump").empty();
-        // Create a variable that creates an HTML image element with the source of the gif
-        var submittedGifHolder = $("<img>").attr("src", $(this).attr("gifURL"));
-        submittedGifHolder.addClass("submitted");
-        // Create a vote button to append to the gif
-        var voteBtn = $("<button>").addClass("btn btn-dark vote-button customButton");
-        voteBtn.text("Vote For Me");
-        // Append button to submitted gif holder
-        submittedGifHolder.append(voteBtn);
-        // Display the chosen gif into the community gif dump
-        var gifDiv = $("<div>").append(submittedGifHolder, voteBtn);
-        gifDiv.addClass("customGif");
-        $("#community-gif-dump").append(gifDiv);
-        $("#community-gif-dump").append(submittedGifHolder, voteBtn);
-        // Update gifLink
+
         database.ref().child("players/" + playerName).update({
             gifLink: $(this).attr("gifURL")
         });
         // Make firebase reference
         database.ref("gifs/").push({
             gifpick: $(this).attr("gifURL")
-        })
-        // update page
-        database.ref("gifs/").on('child_added', function(childsnapshot) {
-            console.log("Gifs childsnapshot : " + childsnapshot.val().gifpick);
-            var newHolder = $("<img>").attr("src", childsnapshot.val().gifpick);
-            $("#community-gif-dump").append(newHolder);
-        })
-        // Update gifs on page hopefully
-        database.ref("players/").child('gifLink').on("value", function(snapshot) {
-            console.log("gifLink snapshot : " + snapshot.val());
-            $("community-gif-dump").append(snapshot.val());
-        })
+        });
+
+    };
+
+    
+    database.ref("gifs/").on('child_added', function(childsnapshot) {
+        var voteBtn = $("<button>").addClass("btn btn-dark vote-button customButton");
+        voteBtn.text("Vote For Me");
+        console.log("Gifs childsnapshot : " + childsnapshot.val().gifpick);
+        var newHolder = $("<img>").attr("src", childsnapshot.val().gifpick);
+        var gifDiv = $("<div>").append(newHolder)
+        gifDiv.append(voteBtn);
+        $("#community-gif-dump").append(gifDiv);
         
         voteBtn.on("click", function () {
             console.log("votes" + votes);
@@ -153,10 +145,7 @@ $(document).ready(function () {
             votes++;
             voteBtn.hide();
         })
-
-
-
-    };
+    });
 
 
 
@@ -169,6 +158,7 @@ $(document).ready(function () {
         })
 
         $("#newRoundButton").hide();
+        $("#gif-holder").css("display", "block")
 
 
 
@@ -182,6 +172,12 @@ $(document).ready(function () {
 
         $("#blackCardText").empty();
         $("#community-gif-dump").empty();
+
+        callQuestion();
+
+    }
+
+    function pickQuestion() {
         var queryURL = "https://api.myjson.com/bins/19wq0e";
         var blackCard = 0;
 
@@ -212,7 +208,6 @@ $(document).ready(function () {
 
             // Pushes question to database when button is clicked
             setquestion();
-            callQuestion();
 
             // var questionText = database.ref('question/' + cardquestion)
             // console.log(questionText)
@@ -223,10 +218,6 @@ $(document).ready(function () {
 
         })
 
-    }
-
-    function pickCard(){
-        
     }
 
     function callQuestion() {
@@ -257,8 +248,10 @@ $(document).ready(function () {
     }
 
     function progressGame() {
+        pickQuestion();
         $("#community-gif-dump").empty();
         $("#gif-input").val("");
+        database.ref("gifs/").remove();
         votes = 1;
         counter = 30;
         callQuestion();

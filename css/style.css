@@ -23,6 +23,15 @@ body{
 #player-name-form {
     width: 50%;
     padding-top: 10px;
+    font-size: 100%
+}
+
+#player-name-para {
+    padding-right: 1em;
+}
+
+#gif-holder {
+    display: none;
 }
 
 .card-header {
