@@ -1,8 +1,4 @@
 $(document).ready(function () {
-    var blackCardImg = $("#imgg");
-    console.log("linked");
-
-    // ============================================================================ GIF SECTION =====================================================================================
 
     // configure firebase
     var config = {
@@ -74,6 +70,8 @@ $(document).ready(function () {
     $("#gif-search").on("click", gifSearch);
     // Creating event listener for gif submit button "Pick Me"
     $(document).on("click", ".player-pick", gifSubmit);
+    // Event listener for vote button
+    $(document).on("click", ".vote-button", voteFunction)
 
     // gifSearch Function
     function gifSearch(e) {
@@ -92,7 +90,6 @@ $(document).ready(function () {
         }).then(function (response) {
             // Creating a variable to get access to the response JSON data
             var data = response.data;
-            console.log(response.data);
             // Referencing the player's gif dump
             var playerGifs = $("#player-gif-dump");
             // Looping through the JSON data
@@ -100,7 +97,7 @@ $(document).ready(function () {
                 // Creating a variable to access the gifs URL
                 var gifURL = response.data[i].images.fixed_width_small.url;
                 // Creating a variable that creates an HTML button element to submit the desired gif
-                var submitGif = $("<button>").addClass("btn btn-dark player-pick");
+                var submitGif = $("<button>").addClass("btn btn-dark player-pick").attr("id", playerName);
                 submitGif.attr("gifURL", gifURL);
                 submitGif.text("Pick Me");
                 // Creating a variable that creates an HTML image element with the source of the gif
@@ -111,12 +108,11 @@ $(document).ready(function () {
             }
         });
     };
-    var votes = 1;
+
     // gifSubmit function
     function gifSubmit() {
         // Empty the players gif dump
         $("#player-gif-dump").empty();
-
         database.ref().child("players/" + playerName).update({
             gifLink: $(this).attr("gifURL")
         });
@@ -127,60 +123,66 @@ $(document).ready(function () {
 
     };
 
-    
-    database.ref("gifs/").on('child_added', function(childsnapshot) {
+    database.ref("gifs/").on('child_added', function (childsnapshot) {
         var voteBtn = $("<button>").addClass("btn btn-dark vote-button customButton");
         voteBtn.text("Vote For Me");
+        voteBtn.attr("pick", childsnapshot.val().gifpick)
         console.log("Gifs childsnapshot : " + childsnapshot.val().gifpick);
         var newHolder = $("<img>").attr("src", childsnapshot.val().gifpick);
         var gifDiv = $("<div>").append(newHolder)
         gifDiv.append(voteBtn);
         $("#community-gif-dump").append(gifDiv);
-        
-        voteBtn.on("click", function () {
-            console.log("votes" + votes);
-            database.ref().child("players/" + playerName).update({
-                voteCount: votes
-            })
-            votes++;
-            voteBtn.hide();
-        })
+
     });
 
+    function voteFunction() {
+        // create a variable that references an attribute on the clicked vote button. The attribute's value is gifpick
+        var pick = $(this).attr("pick");
+        // create a variable to register vote counts. set it to 0 so that each vote only counts as one point
+        var vote = 0
+
+        database.ref().once("value", function (snapshot) {
+            // create a variable to reference snapshot object
+            var dbObj = snapshot.val();
+            // create a variable to reference the players key
+            var players = dbObj.players;
+            // loop through all of the players and retrieve their name and gifLink
+            for (var key in players) {
+                // If the pick matches any of the gifs, then the correct user should recieve a vote
+                if (pick === players[key].gifLink) {
+                    // Increment voteCount of specific player
+                    vote = parseInt(players[key].voteCount) + 1;
+                    // Update player's votecount on database
+                    database.ref("players/" + players[key].Name).update({
+                        voteCount: vote
+                    })
+                }
+            }
+        });
+    };
 
 
-
-    // ======================================================================== CARD SECTION ===================================================================================
+   
     $(document).on("click", "#newRoundButton", function () {
-
         database.ref().child("players/" + playerName).update({
             status: 'Ready'
         })
-
         $("#newRoundButton").hide();
         $("#gif-holder").css("display", "block")
-
-
-
     })
 
-    // ==================================================START GAME SECTION =============================================================================
-
+    
     function startGame() {
-
+        console.log("Start Game Function Ran")
         countDown();
-
         $("#blackCardText").empty();
         $("#community-gif-dump").empty();
-
         callQuestion();
-
     }
+
 
     function pickQuestion() {
         var queryURL = "https://api.myjson.com/bins/19wq0e";
-        var blackCard = 0;
-
         $.ajax({
             url: queryURL,
             method: "GET"
@@ -189,14 +191,6 @@ $(document).ready(function () {
             var randomIdx = Math.floor(Math.random() * (blackCardsLen + 1))
             var text = response.blackCards[randomIdx].text
             var pick = response.blackCards[randomIdx].pick;
-            // console.log("picked " + pick);
-            // console.log(blackCardsLen)
-            // console.log(response.blackCards[randomIdx]);
-            // !!!!!!!! I tried to make it that it would only choose cards that had a pick one, didnt work, we may have to find a way to append two gifs to one vote button
-            if (pick > 1) {
-                blackCardsLen++;
-            }
-
 
             // Function that sets and rewrites question when new question is generated
             function setquestion() {
@@ -205,49 +199,47 @@ $(document).ready(function () {
                 })
             };
 
-
             // Pushes question to database when button is clicked
             setquestion();
-
-            // var questionText = database.ref('question/' + cardquestion)
-            // console.log(questionText)
-
-            // $("#blackCardText").append(questionText);
-
-
-
         })
-
     }
 
+    var blackCardImg = $("#imgg");    
     function callQuestion() {
+        blackCardImg.animate({
+            height: "80px"
+        });
         database.ref('question/').child("cardquestion").on('value', function (snapshot) {
             console.log("Question Snapshot: " + snapshot.val());
             $("#blackCardText").html(snapshot.val());
+            
         })
     }
 
+    // Created variable to reference the set timeout(progressGame) so we can clear it when the game ends
+    var setTimeOutPG;
     function countDown() {
-        // console.log(counter);
         counter--;
         $("#timer").html(counter);
         if (!timerRunning) {
             timeId = setInterval(countDown, 1000);
             timerRunning = true;
         };
+        gameOver();
         if (counter == 0) {
             $("#timer").html("Time to vote!")
-            $("#blackCardText").html("Winner won!");
             clearInterval(timeId);
             timerRunning = false;
             blackCardImg.animate({
-                height: "80px"
+                height: ".05px"
             });
-            setTimeout(progressGame, 4500)
+            setTimeOutPG = setTimeout(progressGame, 5000);
+            setTimeout(progressGame, 5000)
         }
     }
 
     function progressGame() {
+        console.log("Progress Game Ran")
         pickQuestion();
         $("#community-gif-dump").empty();
         $("#gif-input").val("");
@@ -258,19 +250,15 @@ $(document).ready(function () {
         countDown();
     };
 
+    
+    // Setting the StartGame Status in Firebase. If there are 3 or more ready players the game starts.
     database.ref("players/").on("value", function (snapshot) {
-
-        console.log(playerName);
         var playerNamesObject = snapshot.val();
         var playernames = Object.keys(playerNamesObject);
-        numPlayers = playernames.length;
-        console.log(playerNamesObject);
-        console.log(playernames);
-        console.log(numPlayers);
+        var numPlayers = playernames.length;
         var sum = 0;
         var readyValueArray = []
         for (i = 0; i < numPlayers; i++) {
-            console.log(playerNamesObject[playernames[i]].status)
             var playerStatus = playerNamesObject[playernames[i]].status
             var readyValue;
 
@@ -284,9 +272,6 @@ $(document).ready(function () {
 
             sum += readyValueArray[i]
         }
-        console.log(readyValueArray)
-        console.log(sum)
-        console.log(numPlayers)
         if (numPlayers == 1) {
             database.ref('StartGame/').update({
                 Status: "No",
@@ -302,6 +287,7 @@ $(document).ready(function () {
         console.log("Errors handled: " + errorObject.code);
     });
 
+    // Runs the game if the startGame stat is equal to yes in firebase
     database.ref("StartGame/").on("value", function (snapshot) {
         var startGameStat = snapshot.val().Status;
         console.log(startGameStat)
@@ -312,6 +298,45 @@ $(document).ready(function () {
         console.log("Errors handled: " + errorObject.code);
     });
 
+
+    // Stop time when game ends
+    function stopTime() {
+        clearInterval(timeId);
+    }
+
+    // // End game 
+    function gameOver() {
+        console.log("Timer Running from game over: " + timerRunning)
+        // Set up variable to reference all players in database
+        var dbPlayers = database.ref("players/").orderByKey();
+        // Looping through the snapshot data
+        dbPlayers.once("value")
+        .then(function(snapshot) {
+            snapshot.forEach(function(childsnapshot) {
+                // Creating a variable to access data, the players Names and vote counts
+                var playersData = childsnapshot.val();
+                var dvpName = playersData.Name;
+                var dbpVotes = playersData.voteCount;
+                // If any player has 10 or more votes, stop the timers, replace the text with winnter text and change firebse Startgame to no
+                if(dbpVotes >= 10) {
+                    timerRunning = false
+                    stopTime();
+                    console.log("Player " + dvpName + " wins with " + dbpVotes + " votes!");
+                    $("#blackCardText").html("Player " + dvpName + " wins with " + dbpVotes + " votes!");
+                    $("#timer").html("");
+                    if (!timerRunning) {
+                        timeId = setInterval(countDown, 1000);
+                        clearInterval(timeId);
+                        clearInterval(setTimeOutPG);
+                    };
+                    database.ref('StartGame/').update({
+                        Status: "No",
+                    })
+                } 
+
+            })
+        })
+    }
 
 
 });
